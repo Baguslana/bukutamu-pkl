@@ -1,6 +1,5 @@
-<?php   include "header.php";
+<?php include "header.php";
 ?>
-
 <div class="row">
     <div class="col-md-12">
         <div class="card shadow mb-4 mt-3">
@@ -19,12 +18,11 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Dari Tanggal</label>
+                                <label>Sampai Tanggal</label>
                                 <input class="form-control" type="date" name="tanggal2" value="<?= isset($_POST['tanggal2']) ? $_POST['tanggal2'] : date('Y-m-d') ?>" required>
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-4"></div>
                         <div class="col-md-2">
@@ -35,12 +33,9 @@
                         </div>
                     </div>
                 </form>
-
                 <?php
                 if (isset($_POST['btampilkan'])) :
-
                 ?>
-
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
@@ -82,41 +77,30 @@
                                 <?php } ?>
                             </tbody>
                         </table>
-
                         <center>
                             <div class="col-md-4">
                                 <form method="post" action="exportexcel.php">
-                                <input type="hidden" name="tanggala" value="<?= @$_POST ['tanggal1'] ?>">
-                                <input type="hidden" name="tanggalb" value="<?= @$_POST ['tanggal2'] ?>">
+                                    <input type="hidden" name="tanggala" value="<?= @$_POST['tanggal1'] ?>">
+                                    <input type="hidden" name="tanggalb" value="<?= @$_POST['tanggal2'] ?>">
 
-                                <button class="btn btn-success form-control" name="bexport"><i class="fa fa-download"></i> Export Data To Excel</button>
-                            </form>
+                                    <button class="btn btn-success form-control" name="bexport"><i class="fa fa-download"></i> Export Data To Excel</button>
+                                </form>
                             </div>
                         </center>
-
                         <center>
                             <div class="col-md-4">
                                 <form method="post" action="exportpdf.php">
-                                <input type="hidden" name="tanggala" value="<?= @$_POST ['tanggal1'] ?>">
-                                <input type="hidden" name="tanggalb" value="<?= @$_POST ['tanggal2'] ?>">
+                                    <input type="hidden" name="tanggala" value="<?= @$_POST['tanggal1'] ?>">
+                                    <input type="hidden" name="tanggalb" value="<?= @$_POST['tanggal2'] ?>">
 
-                                <button class="btn btn-danger form-control" name="bexport"><i class="fa fa-download"></i> Export Data To PDF</button>
-                            </form>
+                                    <button class="btn btn-danger form-control" name="bexport"><i class="fa fa-download"></i> Export Data To PDF</button>
+                                </form>
                             </div>
                         </center>
-
                     </div>
                 <?php endif; ?>
-
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
 <?php include "footer.php"; ?>
