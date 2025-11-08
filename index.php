@@ -1,5 +1,30 @@
+<?php
+include "koneksi.php";
+
+// Proses simpan data dari pengunjung
+if (isset($_POST['bsimpan'])) {
+    $nama   = htmlspecialchars($_POST['nama'], ENT_QUOTES);
+    $alamat = htmlspecialchars($_POST['alamat'], ENT_QUOTES);
+    $tujuan = htmlspecialchars($_POST['tujuan'], ENT_QUOTES);
+    $nohp   = htmlspecialchars($_POST['nohp'], ENT_QUOTES);
+
+    $simpan = mysqli_query($koneksi, "
+        INSERT INTO guestbook 
+        (created_at, guest_name, guest_address, purpose_of_visit, guest_phone, created_by) 
+        VALUES (NOW(), '$nama', '$alamat', '$tujuan', '$nohp', 0)
+    ");
+
+    if ($simpan) {
+        echo "<script>alert('Terima kasih! Data Anda telah dikirim dan menunggu verifikasi.');document.location='guest_form.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Maaf, data gagal dikirim. Silakan coba lagi.');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
 
@@ -9,10 +34,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Halaman Login | Buku Tamu DISDIKBUD</title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="assets/img/logo.png" type="image/x-icon">
+    <title>Buku Tamu Dinas Pendidikan dan Kebudayaan</title>
 
     <!-- Custom fonts for this template-->
     <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -22,75 +44,59 @@
 
     <!-- Custom styles for this template-->
     <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+    <!-- Custom styles for this page -->
+    <link href="assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
 
 </head>
 
-<body class="bg-gradient-success">
+<body class="bg-success bg-gradient">
 
-    <div class="container">
-
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-
-            <div class="col-xl-10 col-lg-12 col-md-9">
-
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-lg-block bg-success shadow-lg p-5 text-center">
-                                <img src="assets/img/logo.png" class="img-fluid mx-auto d-block" style="max-width: 150px; height: auto;">
-                                <h3 class="text-white"><b>Buku Tamu</b>
-                                    <br><b>Dinas Pendidikan dan</b>
-                                    <br><b>Kebudayaan</b>
-                                    <br><small>Kabupaten Subang</small>
-                                </h3>
-                                </h3>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Selamat Datang!</h1>
-                                    </div>
-                                    <form class="user" action="cek_login.php" method="post">
-                                        <div class="form-group">
-                                            <input type="text" name="username" class="form-control form-control-user"
-                                                id="username"
-                                                placeholder="Enter Username...">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="password" name="password" class="form-control form-control-user"
-                                                id="password" placeholder="Password">
-                                        </div>
-                                        <button class="btn btn-primary btn-user btn-block">Login</button>
-                                        <hr>
-                                    </form>
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="#">By.PKL Universitas Mandiri 2025</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+    <div class="container py-5">
+        <div class="card shadow-lg border-0 mx-auto" style="max-width: 500px;">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="mb-0">Form Buku Tamu</h4>
+                <small>Dinas Pendidikan dan Kebudayaan Kab. Subang</small>
             </div>
-
+            <div class="card-body">
+                <form method="post" action="">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" name="nama" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alamat</label>
+                        <input type="text" name="alamat" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tujuan Kunjungan</label>
+                        <input type="text" name="tujuan" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nomor HP</label>
+                        <input type="text" name="nohp" class="form-control" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" name="bsimpan" class="btn btn-success px-4">
+                            <i class="fa fa-paper-plane"></i> Kirim
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center small text-muted">
+                Data Anda akan diverifikasi oleh admin setelah di kirim.
+            </div>
         </div>
-
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <footer class="text-center py-2 text-white-50 mt-4" style="font-size: 0.9rem;">
+        © 2025 Mahasiswa PKL Universitas Mandiri — Dinas Pendidikan dan Kebudayaan Kab. Subang
+    </footer>
+
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="assets/js/sb-admin-2.min.js"></script>
-
 </body>
 
 </html>

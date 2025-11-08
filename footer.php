@@ -1,6 +1,10 @@
 </div>
 <!-- end Container -->
 
+<!-- Footer -->
+<footer class="text-center py-2 mt-4 text-white-50" style="font-size: 0.9rem;">
+    © 2025 Mahasiswa PKL Universitas Mandiri — Dinas Pendidikan dan Kebudayaan Kab. Subang
+</footer>
 
 
 <!-- Bootstrap core JavaScript-->

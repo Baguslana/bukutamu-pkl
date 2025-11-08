@@ -1,18 +1,16 @@
 <?php
-
 include "koneksi.php";
-
-
 session_start();
-if (
-    empty($_SESSION['username'])
-    or empty($_SESSION['password'])
-) {
-    echo "<script> alert('Maaf, untuk mengakses halaman ini, Anda diharuskan Login terlebih dahulu..!!');
-             document.location='index.php'
-             </script>";
+
+if (empty($_SESSION['username']) || empty($_SESSION['password']) || $_SESSION['id'] <= 0) {
+    echo "<script>
+        alert('Maaf, Anda harus login terlebih dahulu!');
+document.location='admin_login.php'
+    </script>";
+    exit;
 }
 
+$userId = (int)$_SESSION['id'];
 ?>
 
 <link rel="icon" href="assets/img/logo.png" type="image/x-icon">

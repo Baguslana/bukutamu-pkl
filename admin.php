@@ -1,25 +1,95 @@
-<?php include "header.php"; ?>
 <?php
+include "header.php";
+// Ambil ID admin aktif
+$userId = (int)$_SESSION['id'];
+// Tambah data (dari modal)
 if (isset($_POST['bsimpan'])) {
-    $tgl = date('Y-m-d');
-
     $nama   = htmlspecialchars($_POST['nama'], ENT_QUOTES);
     $alamat = htmlspecialchars($_POST['alamat'], ENT_QUOTES);
     $tujuan = htmlspecialchars($_POST['tujuan'], ENT_QUOTES);
     $nohp   = htmlspecialchars($_POST['nohp'], ENT_QUOTES);
 
-    $simpan = mysqli_query($koneksi, "INSERT INTO guestbook values ('', '$tgl', '$nama', '$alamat', '$tujuan', '$nohp')");
+    $simpan = mysqli_query($koneksi, "
+    INSERT INTO guestbook 
+        (created_at, guest_name, guest_address, purpose_of_visit, guest_phone, created_by, approved_at, approved_by)
+    VALUES
+        (NOW(), '$nama', '$alamat', '$tujuan', '$nohp', $userId, NOW(), $userId)
+    ");
+
 
     if ($simpan) {
-        echo "<script>alert('Simpan Data BERHASIL!!');document.location='?'</script>";
-    } else {
-        echo "<script>alert('Data GAGAL disimpan!!');document.location='?'</script>";
+        echo "<script>alert('Data berhasil disimpan!');document.location='admin.php';</script>";
+        exit;
     }
 }
+// APPROVE
+if (isset($_POST['approve_id'])) {
+    $id = (int)$_POST['approve_id'];
+    mysqli_query($koneksi, "
+        UPDATE guestbook
+        SET approved_at = NOW(),
+            approved_by = $userId,
+            rejected_at = NULL,
+            rejected_by = NULL
+        WHERE id = $id
+    ");
+    header("Location: admin.php");
+    exit;
+}
+
+// REJECT
+if (isset($_POST['reject_id'])) {
+    $id = (int)$_POST['reject_id'];
+    mysqli_query($koneksi, "
+        UPDATE guestbook
+        SET rejected_at = NOW(),
+            rejected_by = $userId,
+            approved_at = NULL,
+            approved_by = NULL
+        WHERE id = $id
+    ");
+    header("Location: admin.php");
+    exit;
+}
 ?>
-
-
-<!-- head -->
+<!-- Modal Tambah Data -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Tambah Data Pengunjung</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Pengunjung</label>
+                        <input type="text" name="nama" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Pengunjung</label>
+                        <input type="text" name="alamat" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tujuan</label>
+                        <input type="text" name="tujuan" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>No. HP</label>
+                        <input type="text" name="nohp" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" name="bsimpan" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- head / style -->
 <style>
     .logo-img {
         max-width: 100px;
@@ -94,67 +164,51 @@ if (isset($_POST['bsimpan'])) {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 </style>
-
 <div class="head text-center">
-    <!-- Logo di atas dan center -->
     <img src="assets/img/logo.png" class="img-fluid logo-img" alt="Logo Dinas">
-
-    <!-- Teks di bawah logo -->
     <div class="head-text text-white">
         <h2 class="mb-1">Buku Tamu</h2>
         <h3>Dinas Pendidikan dan Kebudayaan Kab. Subang</h3>
     </div>
 </div>
-
-<!-- end head -->
-
-<!-- row -->
+<!-- Statistik + Chart -->
 <div class="row mt-2">
-    <!-- statistik pengujung -->
     <div class="col-12 mb-3">
-        <div class="card shadow h-100 position-relative overflow-hidden"> <!-- Tambah position-relative & overflow-hidden -->
-            <!-- Particles Background Container -->
-            <div id="particles-stats" class="position-absolute w-100 h-100" style="top: 0; left: 0; z-index: 1;"></div>
-
-            <div class="card-body d-flex flex-column position-relative" style="z-index: 2;"> <!-- z-index tinggi untuk konten -->
+        <div class="card shadow h-100 position-relative overflow-hidden">
+            <div id="particles-stats" class="position-absolute w-100 h-100" style="top:0;left:0;z-index:1;"></div>
+            <div class="card-body d-flex flex-column position-relative" style="z-index:2;">
                 <div class="text-center mb-3">
                     <h1 class="h4 text-white mb-0 fw-bold text-shadow">Statistik Pengunjung</h1>
                 </div>
-
                 <?php
-                // ===== Query untuk summary cards =====
-                $tgl_sekarang   = date('Y-m-d');
-                $kemarin        = date('Y-m-d', strtotime('-1 day', strtotime(date('Y-m-d'))));
-                $seminggu       = date('Y-m-d H:i:s', strtotime('-1 week +1 day', strtotime($tgl_sekarang)));
-                $bulan_ini      = date('m');
-                $sekarang       = date('Y-m-d H:i:s');
+                $tgl_sekarang  = date('Y-m-d');
+                $kemarin       = date('Y-m-d', strtotime('-1 day'));
+                $seminggu_lalu = date('Y-m-d', strtotime('-6 day')); // 7 hari ke belakang termasuk hari ini
+                $bulan_ini     = date('m');
 
-                $hari_ini_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at LIKE '%$tgl_sekarang%'"));
-                $kemarin_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at LIKE '%$kemarin%'"));
-                $seminggu_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at BETWEEN '$seminggu' AND '$sekarang'"));
-                $sebulan_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE MONTH(created_at) = '$bulan_ini'"));
-                $keseluruhan_count  = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook"));
+                $hari_ini_count    = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE DATE(created_at) = '$tgl_sekarang'AND approved_at IS NOT NULL"));
+                $kemarin_count     = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE DATE(created_at) = '$kemarin'AND approved_at IS NOT NULL"));
+                $seminggu_count    = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE DATE(created_at) BETWEEN '$seminggu_lalu' AND '$tgl_sekarang'AND approved_at IS NOT NULL"));
+                $sebulan_count     = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE MONTH(created_at) = '$bulan_ini'AND approved_at IS NOT NULL"));
+                $keseluruhan_count = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook"));
 
-                // ===== Query untuk chart: 7 hari terakhir =====
                 $chart_labels = [];
                 $chart_values = [];
                 for ($i = 6; $i >= 0; $i--) {
                     $d = date('Y-m-d', strtotime("-$i day"));
                     $chart_labels[] = date('d M', strtotime($d));
-                    $row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jml FROM guestbook WHERE created_at = '$d'"));
+                    $row = mysqli_fetch_assoc(mysqli_query(
+                        $koneksi,
+                        "SELECT COUNT(*) AS jml FROM guestbook WHERE DATE(created_at) = '$d'"
+                    ));
                     $chart_values[] = (int)$row['jml'];
                 }
                 ?>
-
-
-                <!-- Chart Container -->
                 <div class="flex-grow-1 d-flex align-items-center justify-content-center mb-3">
                     <div style="position: relative; width: 100%; height: 250px;">
                         <canvas id="visitorChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Summary Cards dengan glass effect -->
                 <div class="row g-2 mt-auto">
                     <div class="col">
                         <div class="card glass-card1 text-light border-0">
@@ -176,7 +230,7 @@ if (isset($_POST['bsimpan'])) {
                         <div class="card glass-card3 text-white border-0">
                             <div class="card-body p-1 text-center">
                                 <div class="h6 mb-0 fw-bold"><?= $seminggu_count[0] ?></div>
-                                <div class="small">Minggu Ini</div>
+                                <div class="small">7 Hari Terakhir</div>
                             </div>
                         </div>
                     </div>
@@ -197,18 +251,18 @@ if (isset($_POST['bsimpan'])) {
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-    <!-- end statistik pengunjung  -->
 </div>
-<!-- end row -->
-
-<!-- DataTables Example -->
+<!-- DataTables -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Data Riwayat Pengunjung Hari ini [<?= date('Y-m-d') ?>]</h6>
-        <a href="logout.php" class="btn btn-danger mb-3"><i class="fa fa-sign-out-alt"> Logout</i></a>
+        <a href="logout.php" class="btn btn-danger mb-3">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
     </div>
     <div class="card-body">
         <form id="filterForm" class="row g-2 mb-3" method="get" action="">
@@ -227,7 +281,7 @@ if (isset($_POST['bsimpan'])) {
             </div>
         </form>
         <div class="text-end mb-3">
-            <a href="" class="btn btn-primary">
+            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
                 <i class="fa fa-plus"></i> Tambah Data
             </a>
         </div>
@@ -246,21 +300,42 @@ if (isset($_POST['bsimpan'])) {
                 </thead>
                 <tbody>
                     <?php
-                    $tgl1 = isset($_GET['tanggal1']) ? $_GET['tanggal1'] : date('Y-m-d');
-                    $tgl2 = isset($_GET['tanggal2']) ? $_GET['tanggal2'] : date('Y-m-d');
-
-                    $tampil = mysqli_query($koneksi, "SELECT * FROM guestbook WHERE created_at BETWEEN '$tgl1' AND '$tgl2' ORDER BY id DESC");
+                    $tampil = mysqli_query($koneksi, "
+                        SELECT * FROM guestbook
+                        WHERE DATE(created_at) BETWEEN '$tgl1' AND '$tgl2'
+                        AND rejected_at IS NULL
+                        ORDER BY id DESC
+                    ");
                     $no = 1;
-                    while ($data = mysqli_fetch_array($tampil)) {
+                    while ($data = mysqli_fetch_assoc($tampil)) {
                     ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><?= $data['created_at'] ?></td>
-                            <td><?= $data['guest_name'] ?></td>
-                            <td><?= $data['guest_address'] ?></td>
-                            <td><?= $data['purpose_of_visit'] ?></td>
-                            <td><?= $data['guest_phone'] ?></td>
-                            <td></td>
+                            <td><?= date('Y-m-d H:i', strtotime($data['created_at'])) ?></td>
+                            <td><?= htmlspecialchars($data['guest_name']) ?></td>
+                            <td><?= htmlspecialchars($data['guest_address']) ?></td>
+                            <td><?= htmlspecialchars($data['purpose_of_visit']) ?></td>
+                            <td><?= htmlspecialchars($data['guest_phone']) ?></td>
+                            <td class="text-center">
+                                <?php if (is_null($data['approved_at']) && is_null($data['rejected_at'])): ?>
+                                    <!-- PENDING: tampilkan tombol -->
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="approve_id" value="<?= $data['id'] ?>">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="reject_id" value="<?= $data['id'] ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </form>
+                                <?php elseif (!is_null($data['approved_at']) && is_null($data['rejected_at'])): ?>
+                                    <!-- APPROVED: tidak ada tombol, hanya label -->
+                                    <span class="badge bg-success text-white">Approved</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 </tbody>

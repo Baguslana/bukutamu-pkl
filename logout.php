@@ -11,5 +11,5 @@ unset($_SESSION['name']);
 
 session_destroy();
 echo "<script>alert('Anda telah keluar dari halaman Admin...!');
-    document.location='index.php'
+document.location='admin_login.php'
     </script>";
