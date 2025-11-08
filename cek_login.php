@@ -11,22 +11,19 @@ include "koneksi.php";
 @$password = mysqli_escape_string($koneksi, $pass);
 
 
-$login = mysqli_query($koneksi, "SELECT * FROM tuser where username = '$username' and password = '$password' and status = 'Aktif' ");
+$login = mysqli_query($koneksi, "SELECT * FROM user where username = '$username' and password = '$password' ");
 
 $data = mysqli_fetch_array($login);
 
 //Jika username dan password sesuai
 if ($data) {
-    $_SESSION['id_user'] = $data['id_user'];
+    $_SESSION['id'] = $data['id'];
     $_SESSION['username'] = $data['username'];
     $_SESSION['password'] = $data['password'];
-    $_SESSION['nama_pengguna'] = $data['nama_pengguna'];
 
     header('location:admin.php');
-}else{
+} else {
     echo "<script>alert('Maaf, Login Gagal, Pastikan Password dan Username Anda Benar...!');
     document.location='index.php'
     </script>";
 }
-
-?>

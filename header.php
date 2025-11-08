@@ -4,14 +4,14 @@ include "koneksi.php";
 
 
 session_start();
-if (empty($_SESSION['username'])
+if (
+    empty($_SESSION['username'])
     or empty($_SESSION['password'])
-    or empty($_SESSION['nama_pengguna'])
-    ){
-        echo "<script> alert('Maaf, untuk mengakses halaman ini, Anda diharuskan Login terlebih dahulu..!!');
+) {
+    echo "<script> alert('Maaf, untuk mengakses halaman ini, Anda diharuskan Login terlebih dahulu..!!');
              document.location='index.php'
              </script>";
-    }
+}
 
 ?>
 
@@ -49,5 +49,5 @@ if (empty($_SESSION['username'])
 
 <body class="bg-success">
 
-<!-- Container -->
- <div class="container">
+    <!-- Container -->
+    <div class="container">

@@ -8,7 +8,7 @@ if (isset($_POST['bsimpan'])) {
     $tujuan = htmlspecialchars($_POST['tujuan'], ENT_QUOTES);
     $nohp   = htmlspecialchars($_POST['nohp'], ENT_QUOTES);
 
-    $simpan = mysqli_query($koneksi, "INSERT INTO ttamu values ('', '$tgl', '$nama', '$alamat', '$tujuan', '$nohp')");
+    $simpan = mysqli_query($koneksi, "INSERT INTO guestbook values ('', '$tgl', '$nama', '$alamat', '$tujuan', '$nohp')");
 
     if ($simpan) {
         echo "<script>alert('Simpan Data BERHASIL!!');document.location='?'</script>";
@@ -129,11 +129,11 @@ if (isset($_POST['bsimpan'])) {
                 $bulan_ini      = date('m');
                 $sekarang       = date('Y-m-d H:i:s');
 
-                $hari_ini_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM ttamu WHERE tanggal LIKE '%$tgl_sekarang%'"));
-                $kemarin_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM ttamu WHERE tanggal LIKE '%$kemarin%'"));
-                $seminggu_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM ttamu WHERE tanggal BETWEEN '$seminggu' AND '$sekarang'"));
-                $sebulan_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM ttamu WHERE MONTH(tanggal) = '$bulan_ini'"));
-                $keseluruhan_count  = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM ttamu"));
+                $hari_ini_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at LIKE '%$tgl_sekarang%'"));
+                $kemarin_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at LIKE '%$kemarin%'"));
+                $seminggu_count     = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE created_at BETWEEN '$seminggu' AND '$sekarang'"));
+                $sebulan_count      = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook WHERE MONTH(created_at) = '$bulan_ini'"));
+                $keseluruhan_count  = mysqli_fetch_array(mysqli_query($koneksi, "SELECT COUNT(*) FROM guestbook"));
 
                 // ===== Query untuk chart: 7 hari terakhir =====
                 $chart_labels = [];
@@ -141,7 +141,7 @@ if (isset($_POST['bsimpan'])) {
                 for ($i = 6; $i >= 0; $i--) {
                     $d = date('Y-m-d', strtotime("-$i day"));
                     $chart_labels[] = date('d M', strtotime($d));
-                    $row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jml FROM ttamu WHERE tanggal = '$d'"));
+                    $row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jml FROM guestbook WHERE created_at = '$d'"));
                     $chart_values[] = (int)$row['jml'];
                 }
                 ?>
@@ -241,6 +241,7 @@ if (isset($_POST['bsimpan'])) {
                         <th>Alamat Pengunjung</th>
                         <th>Tujuan</th>
                         <th>No.HP</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -248,17 +249,18 @@ if (isset($_POST['bsimpan'])) {
                     $tgl1 = isset($_GET['tanggal1']) ? $_GET['tanggal1'] : date('Y-m-d');
                     $tgl2 = isset($_GET['tanggal2']) ? $_GET['tanggal2'] : date('Y-m-d');
 
-                    $tampil = mysqli_query($koneksi, "SELECT * FROM ttamu WHERE tanggal BETWEEN '$tgl1' AND '$tgl2' ORDER BY id DESC");
+                    $tampil = mysqli_query($koneksi, "SELECT * FROM guestbook WHERE created_at BETWEEN '$tgl1' AND '$tgl2' ORDER BY id DESC");
                     $no = 1;
                     while ($data = mysqli_fetch_array($tampil)) {
                     ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><?= $data['tanggal'] ?></td>
-                            <td><?= $data['nama'] ?></td>
-                            <td><?= $data['alamat'] ?></td>
-                            <td><?= $data['tujuan'] ?></td>
-                            <td><?= $data['nohp'] ?></td>
+                            <td><?= $data['created_at'] ?></td>
+                            <td><?= $data['guest_name'] ?></td>
+                            <td><?= $data['guest_address'] ?></td>
+                            <td><?= $data['purpose_of_visit'] ?></td>
+                            <td><?= $data['guest_phone'] ?></td>
+                            <td></td>
                         </tr>
                     <?php } ?>
                 </tbody>

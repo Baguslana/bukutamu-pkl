@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,7 +43,8 @@
                                 <h3 class="text-white"><b>Buku Tamu</b>
                                     <br><b>Dinas Pendidikan dan</b>
                                     <br><b>Kebudayaan</b>
-                                    <br><small>Kabupaten Subang</small></h3>
+                                    <br><small>Kabupaten Subang</small>
+                                </h3>
                                 </h3>
                             </div>
                             <div class="col-lg-6">
@@ -63,17 +62,8 @@
                                             <input type="password" name="password" class="form-control form-control-user"
                                                 id="password" placeholder="Password">
                                         </div>
-                                        <!-- <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
-                                                    Me</label>
-                                            </div>
-                                        </div> -->
                                         <button class="btn btn-primary btn-user btn-block">Login</button>
-                                        
                                         <hr>
-                                        
                                     </form>
                                     <hr>
                                     <div class="text-center">
