@@ -62,17 +62,17 @@
                                 <?php
                                 $tgl1 = $_POST['tanggal1'];
                                 $tgl2 = $_POST['tanggal2'];
-                                $tampil = mysqli_query($koneksi, "SELECT * FROM ttamu where tanggal between '$tgl1' and '$tgl2' order by id desc");
+                                $tampil = mysqli_query($koneksi, "SELECT * FROM guestbook where created_at between '$tgl1' and '$tgl2' order by id desc");
                                 $no = 1;
                                 while ($data = mysqli_fetch_array($tampil)) {
                                 ?>
                                     <tr>
                                         <td><?= $no++ ?></td>
-                                        <td><?= $data['tanggal'] ?></td>
-                                        <td><?= $data['nama'] ?></td>
-                                        <td><?= $data['alamat'] ?></td>
-                                        <td><?= $data['tujuan'] ?></td>
-                                        <td><?= $data['nohp'] ?></td>
+                                        <td><?= $data['created_at'] ?></td>
+                                        <td><?= $data['guest_name'] ?></td>
+                                        <td><?= $data['guest_address'] ?></td>
+                                        <td><?= $data['purpose_of_visit'] ?></td>
+                                        <td><?= $data['guest_phone'] ?></td>
                                     </tr>
                                 <?php } ?>
                             </tbody>

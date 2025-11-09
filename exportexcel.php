@@ -46,17 +46,17 @@ $sheet->fromArray($header, null, 'A7');
 // Ambil data sesuai filter tanggal
 $tgl1 = $_POST['tanggala'];
 $tgl2 = $_POST['tanggalb'];
-$sql = mysqli_query($koneksi,"SELECT * FROM ttamu WHERE tanggal BETWEEN '$tgl1' AND '$tgl2' ORDER BY id ASC");
+$sql = mysqli_query($koneksi, "SELECT * FROM guestbook WHERE created_at BETWEEN '$tgl1' AND '$tgl2' ORDER BY id ASC");
 
 $no = 1;
 $row = 8;
 while ($d = mysqli_fetch_assoc($sql)) {
     $sheet->setCellValue("A$row", $no++);
-    $sheet->setCellValue("B$row", date('d-m-Y', strtotime($d['tanggal'])));
-    $sheet->setCellValue("C$row", $d['nama']);
-    $sheet->setCellValue("D$row", $d['alamat']);
-    $sheet->setCellValue("E$row", $d['tujuan']);
-    $sheet->setCellValueExplicit("F$row", $d['nohp'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+    $sheet->setCellValue("B$row", date('d-m-Y', strtotime($d['created_at'])));
+    $sheet->setCellValue("C$row", $d['guest_name']);
+    $sheet->setCellValue("D$row", $d['guest_address']);
+    $sheet->setCellValue("E$row", $d['purpose_of_visit']);
+    $sheet->setCellValueExplicit("F$row", $d['guest_phone'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
     $row++;
 }
 
@@ -78,22 +78,22 @@ $sheet->getStyle("A7:F$lastRow")->applyFromArray([
 // Tambahkan tanda tangan
 $tandaTanganRow = $lastRow + 3;
 $sheet->mergeCells("E$tandaTanganRow:F$tandaTanganRow")
-      ->setCellValue("E$tandaTanganRow", "Subang, " . date('d-m-Y'));
+    ->setCellValue("E$tandaTanganRow", "Subang, " . date('d-m-Y'));
 
-$sheet->mergeCells("E".($tandaTanganRow+1).":F".($tandaTanganRow+1))
-      ->setCellValue("E".($tandaTanganRow+1), "Mengetahui,");
+$sheet->mergeCells("E" . ($tandaTanganRow + 1) . ":F" . ($tandaTanganRow + 1))
+    ->setCellValue("E" . ($tandaTanganRow + 1), "Mengetahui,");
 
-$sheet->mergeCells("E".($tandaTanganRow+2).":F".($tandaTanganRow+2))
-      ->setCellValue("E".($tandaTanganRow+2), "Penanggung Jawab");
+$sheet->mergeCells("E" . ($tandaTanganRow + 2) . ":F" . ($tandaTanganRow + 2))
+    ->setCellValue("E" . ($tandaTanganRow + 2), "Penanggung Jawab");
 
-$sheet->mergeCells("E".($tandaTanganRow+6).":F".($tandaTanganRow+6))
-      ->setCellValue("E".($tandaTanganRow+6), "____________________");
+$sheet->mergeCells("E" . ($tandaTanganRow + 6) . ":F" . ($tandaTanganRow + 6))
+    ->setCellValue("E" . ($tandaTanganRow + 6), "____________________");
 
 // $sheet->mergeCells("E".($tandaTanganRow+7).":F".($tandaTanganRow+7))
 //       ->setCellValue("E".($tandaTanganRow+7), "Nama Lengkap");
 
-$sheet->getStyle("E$tandaTanganRow:F".($tandaTanganRow+7))
-      ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$sheet->getStyle("E$tandaTanganRow:F" . ($tandaTanganRow + 7))
+    ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 // Output ke browser
 $filename = "Data_Pengunjung.xlsx";

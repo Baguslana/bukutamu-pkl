@@ -15,7 +15,7 @@ if (isset($_POST['bsimpan'])) {
     ");
 
     if ($simpan) {
-        echo "<script>alert('Terima kasih! Data Anda telah dikirim dan menunggu verifikasi.');document.location='guest_form.php';</script>";
+        echo "<script>alert('Terima kasih! Data Anda telah dikirim dan menunggu verifikasi.');document.location='index.php';</script>";
         exit;
     } else {
         echo "<script>alert('Maaf, data gagal dikirim. Silakan coba lagi.');</script>";
@@ -77,7 +77,7 @@ if (isset($_POST['bsimpan'])) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Nomor HP</label>
-                        <input type="text" name="nohp" class="form-control" required>
+                        <input type="tel" name="nohp" class="form-control" pattern="[0-9+]+" required>
                     </div>
                     <div class="text-center">
                         <button type="submit" name="bsimpan" class="btn btn-success px-4">

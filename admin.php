@@ -78,7 +78,7 @@ if (isset($_POST['reject_id'])) {
                     </div>
                     <div class="form-group">
                         <label>No. HP</label>
-                        <input type="text" name="nohp" class="form-control" required>
+                        <input type="tel" name="nohp" class="form-control" pattern="[0-9+]+" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -259,7 +259,7 @@ if (isset($_POST['reject_id'])) {
 <!-- DataTables -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Data Riwayat Pengunjung Hari ini [<?= date('Y-m-d') ?>]</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Data Riwayat Pengunjung Dinas Pendidikan dan Kebudayaan Subang</h6>
         <a href="logout.php" class="btn btn-danger mb-3">
             <i class="fa fa-sign-out-alt"></i> Logout
         </a>
@@ -284,6 +284,21 @@ if (isset($_POST['reject_id'])) {
             <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
                 <i class="fa fa-plus"></i> Tambah Data
             </a>
+            <form method="post" action="exportexcel.php" class="d-inline">
+                <input type="hidden" name="tanggala" value="<?= $tgl1 ?>">
+                <input type="hidden" name="tanggalb" value="<?= $tgl2 ?>">
+                <button class="btn btn-success" name="bexport">
+                    <i class="fa fa-file-excel"></i> Export to Excel
+                </button>
+            </form>
+
+            <form method="post" action="exportpdf.php" class="d-inline">
+                <input type="hidden" name="tanggala" value="<?= $tgl1 ?>">
+                <input type="hidden" name="tanggalb" value="<?= $tgl2 ?>">
+                <button class="btn btn-danger" name="bexport">
+                    <i class="fa fa-file-pdf"></i> Export to PDF
+                </button>
+            </form>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
